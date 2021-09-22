@@ -16,6 +16,12 @@ const app = new Koa2()
 const env = process.env.NODE_ENV || 'development' // Current mode
 
 const publicKey = fs.readFileSync(path.join(__dirname, '../publicKey.pub'))
+// context binding...
+
+const context = require('./utils/context')
+Object.keys(context).forEach(key => {
+  app.context[key] = context[key] // 绑定上下文对象
+})
 
 app
   .use((ctx, next) => {
@@ -31,7 +37,7 @@ app
   })
   .use(ErrorRoutesCatch())
   .use(KoaStatic('assets', path.resolve(__dirname, '../assets'))) // Static resource
-  .use(jwt({ secret: publicKey }).unless({ path: [/^\/public|\/user\/login|\/assets/] }))
+  .use(jwt({ secret: publicKey }).unless({ path: [/^\/public|\/api|\/user\/login|\/assets/] }))
   .use(KoaBody({
     multipart: true,
     parsedMethods: ['POST', 'PUT', 'PATCH', 'GET', 'HEAD', 'DELETE'], // parse GET, HEAD, DELETE requests
@@ -57,8 +63,20 @@ if (env === 'development') { // logger
   })
 }
 
-app.listen(SystemConfig.API_server_port)
+app.listen(SystemConfig.API_server_port, () => {
+  const db = require('./models')
+  db.sequelize
+    .sync({ force: false }) // If force is true, each DAO will do DROP TABLE IF EXISTS ..., before it tries to create its own table
+    .then(async () => {
+      // const initData = require('./initData')
+      // initData() // 创建初始化数据
+      console.log('sequelize connect success')
+      console.log(`Now start API server listen on http://127.0.0.1:${SystemConfig.API_server_port}`)
 
-console.log('Now start API server on port ' + SystemConfig.API_server_port + '...')
+    })
+    .catch(err => {
+      console.log(err)
+    })
+})
 
 export default app

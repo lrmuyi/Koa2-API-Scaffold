@@ -13,3 +13,9 @@ export default router
   .put('/api/:name', controllers.api.Put)
   .del('/api/:name', controllers.api.Delete)
   .post('/auth/:action', controllers.auth.Post)
+  .get('/api/list', controllers.user.getList) // 获取列表
+  .put('/api/:userId', controllers.user.updateUser) // 更新用户信息
+  .delete('/api/:userId', controllers.user.delete) // 删除用户
+
+
+module.exports = router
