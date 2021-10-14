@@ -1,21 +1,21 @@
 const { Spot } = require('@binance/connector')
 const fetch = require('node-fetch')
 const fs = require('fs')
-const { Console } = require('console')
+const { Console, log } = require('console')
 
 class Binance {
     constructor() {
         this.testBaseURL = 'https://api.github.com/users/github'
-        this.baseURL = 'https://api1.binance.com'
+        this.baseURL = 'https://fapi.binance.com'
         this.apiKey = 'H2hr7bWmqfTbWNGkOF74lv4nmFP9XMAcwOziSFoTlI9HSiWmzs0V7u5lWBBjT6Rr'
         this.apiSecret = 'BNncYdRzykX8G0HbCaL3FaymVGIEtv3nMqKUU5FkWSoqOcUsRfm760VUVZjmIFDV'
         // make sure the logs/ folder is created beforehand
-        this.output = fs.createWriteStream('./logs/stdout.log')
-        this.errorOutput = fs.createWriteStream('./logs/stderr.log')
+        // this.output = fs.createWriteStream('./logs/stdout.log')
+        // this.errorOutput = fs.createWriteStream('./logs/stderr.log')
 
-        this.logger = new Console({ stdout: this.output, stderr: this.errorOutput })
+        // this.logger = new Console({ stdout: this.output, stderr: this.errorOutput })
         // this.client = new Spot(this.apiKey, this.apiSecret, { logger: this.logger })
-        this.client = new Spot(this.apiKey, this.apiSecret)
+        this.client = new Spot(this.apiKey, this.apiSecret, { baseURL: this.baseURL })
     }
     _log(info) {
         this.client.logger.info(info)
@@ -44,13 +44,24 @@ class Binance {
         this.client.exchangeInfo().then(response => this._log(response.data))
     }
     /**
-     * @description 挂单
+     * @description 挂单(限价单)
      */
-    creatOrder(symbolPair, side, type = "LIMIT", price, amount, options = {}) {
+    creatLimitOrder(symbolPair, price, amount, side = 'BUY', type = 'LIMIT', options = {}) {
         this.client.newOrder(symbolPair, side, type, {
             price: price,
             quantity: amount,
             timeInForce: 'GTC'
+        }).then(response => this._log(response.data))
+            .catch(error => this._log(error))
+    }
+    /**
+     * @description 挂单(市价单)
+     */
+    creatMarketOrder(symbolPair, amount, side = 'BUY', type = 'MARKET', options = {}) {
+        this.client.newOrder(symbolPair, side, type, {
+            // price: price,
+            quantity: amount,
+            // timeInForce: 'GTC'
         }).then(response => this._log(response.data))
             .catch(error => this._log(error))
     }
@@ -63,9 +74,9 @@ class Binance {
     }
 
     /**
-     * @description 取消挂单
+     * @description 查询挂单
      */
-     allOrders(symbolPair, options = {}) {
+    allOrders(symbolPair, options = {}) {
         this.client.allOrders(symbolPair, options).then(response => this._log(response.data))
             .catch(error => this._log(error))
     }
@@ -78,8 +89,8 @@ class Binance {
 const binance = new Binance
 
 
-// binance.account()
-// binance.creatOrder('FTMUSDT', 'SELL', 'LIMIT', '4.4', 10)
-binance.allOrders('FTMUSDT')
+// binance.exchangeInfo()
+binance.account()
 
-// binance.test()
+// binance.allOrders('FTMUSDT')
+
