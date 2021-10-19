@@ -1,6 +1,11 @@
 const { log } = require('console');
 const BinanceConnector = require('node-binance-api');
 const schedule = require('node-schedule');
+
+const client = new BinanceConnector().options({
+    APIKEY: 'H2hr7bWmqfTbWNGkOF74lv4nmFP9XMAcwOziSFoTlI9HSiWmzs0V7u5lWBBjT6Rr',
+    APISECRET: 'BNncYdRzykX8G0HbCaL3FaymVGIEtv3nMqKUU5FkWSoqOcUsRfm760VUVZjmIFDV'
+});
 class Binance {
     constructor() {
         this.apiKey = 'H2hr7bWmqfTbWNGkOF74lv4nmFP9XMAcwOziSFoTlI9HSiWmzs0V7u5lWBBjT6Rr'
@@ -45,20 +50,6 @@ class Binance {
             log(error.body);
         }
     }
-
-    /**
-  * @description current prices
-  */
-    async futuresExchangeInfo() {
-        try {
-            let response = await this.client.exchangeInfo();
-            // log(response)
-            return response
-        } catch (error) {
-            log(error.body);
-        }
-    }
-
 
 
 
@@ -116,7 +107,18 @@ class Binance {
      */
     async openAllOrder(symbol = false) {
         try {
-            let response = await this.client.openOrders(symbol);
+            let response = await this.client.futuresAllOrders(symbol);
+            log(response)
+        } catch (error) {
+            log(error.body);
+        }
+    }
+    /**
+    * @description 获取全部交易对
+    */
+    async futuresExchangeInfo() {
+        try {
+            let response = await this.client.futuresExchangeInfo();
             log(response)
         } catch (error) {
             log(error.body);
@@ -130,10 +132,10 @@ const binance = new Binance
 // console.timeEnd('buy order test')
 
 
-// binance.marketSell('FTMUSDT', 10)
-// binance.marketBuy('FTMUSDT', 10)
+// binance.marketBuy('FTMUSDT', 1)
+// binance.marketSell('FTMUSDT', 5)
 
-// binance.openAllOrder('FTMUSDT')
+// binance.openAllOrder('BNBUSDT')
 
 const filterBalance = async () => {
     log('===================');
@@ -153,21 +155,20 @@ const filterBalance = async () => {
 
 
 _logSecond = () => {
-    schedule.scheduleJob('* * * * * *', () => {
+    schedule.scheduleJob({ second: [0, 10, 20, 30, 40, 50] }, () => {
         log('====================================');
         log(new Date().getSeconds());
         log('====================================');
     })
 }
 // _logSecond()
-// schedule.scheduleJob({ second: [0, 10, 20, 30, 40, 50] }, () => {
-//     // filterBalance()
-//     // futuresExchangeInfo()
-//     binance.futuresExchangeInfo()
-
+// schedule.scheduleJob('10 * * * * *', () => {
+//     filterBalance()
 // });
 // filterBalance()
+// binance.prices()
+// client.futuresTrades('BNBUSDT').then(res => log(res))
+client.futuresLeverage( 'BNBUSDT', 6 )
+// client.futuresMarketBuy('BNBUSDT', 5).then(res => log(res))
+// client.futuresSell('BNBUSDT', 0.5).then(res => log(res))
 
-// binance.test()
-
-binance.futuresExchangeInfo()

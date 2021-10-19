@@ -1,0 +1,31 @@
+
+```js
+console.info( await binance.futuresTime() );
+console.info( await binance.futuresExchangeInfo() );
+console.info( await binance.futuresCandles( "TRXUSDT", "1m" ) );
+console.info( await binance.futuresDepth( "ADAUSDT" ) );
+console.info( await binance.futuresQuote() );
+console.info( await binance.futuresQuote( "BCHUSDT" ) );
+console.info( await binance.futuresDaily() );
+console.info( await binance.futuresOpenInterest( "BTCUSDT" ) );
+console.info( await binance.futuresMarkPrice() );
+console.info( await binance.futuresMarkPrice( "ETHUSDT" ) );
+console.info( await binance.futuresTrades( "LTCUSDT" ) );
+console.info( await binance.futuresAggTrades( "XTZUSDT" ) );
+console.info( await binance.futuresLiquidationOrders() );
+console.info( await binance.futuresFundingRate() );
+console.info( await binance.futuresHistoricalTrades( "XMRUSDT" ) );
+console.info( await binance.futuresLeverageBracket( "LINKUSDT" ) );
+console.info( await binance.futuresIncome() );
+console.info( await binance.futuresCancelAll( "BTCUSDT" ) );
+console.info( await binance.futuresCancel( "BTCUSDT", {orderId: "1025137386"} ) );
+console.info( await binance.futuresCountdownCancelAll( "BTCUSDT", 45000 ) );
+console.info( await binance.futuresOrderStatus( "BTCUSDT", {orderId: "1025137386"} ) );
+console.info( await binance.futuresOpenOrders() );
+console.info( await binance.futuresOpenOrders( "BTCUSDT" ) );
+console.info( await binance.futuresAllOrders() );
+console.info( await binance.futuresAllOrders( "BTCUSDT" ) );
+console.info( await binance.futuresUserTrades( "BTCUSDT" ) );
+console.info( await binance.futuresGetDataStream() );
+console.info( await binance.futuresPositionMarginHistory( "TRXUSDT" ) );
+console.info( await binance.promiseRequest( 'v1/time' ) );
