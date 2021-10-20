@@ -6,6 +6,8 @@ const { log } = require('console')
 
 
 const pancakeRouter = '0x10ED43C718714eb63d5aA57B78B54704E256024E'
+const MONSTER_PROXY = '0x8a5d7fcd4c90421d21d30fcc4435948ac3618b2f'
+const MONSTER = '0xf8e005D6fF6B27Cac5fF18f8418B450Fe5aE4B85'
 
 class Transaction {
     constructor() {
@@ -19,7 +21,8 @@ class Transaction {
         this._init()
     }
     async _init() {
-        await this.initContractSinger()
+        // await this.initContractSinger(MONSTER, MONSTER_PROXY)
+        await this.initContractSinger(pancakeRouter)
         await this.listenMethods()
 
         // this.test()
@@ -45,33 +48,56 @@ class Transaction {
         console.log(mnemonic);
     }
 
-    async initContractSinger(address = pancakeRouter) {
+    async initContractSinger(address = pancakeRouter, proxy_address = null) {
         let abi = await this.getContractAbi(address)
-        this.contractWithSinger = new Contract(address, abi, this.singer)
+        const iface = new utils.Interface(abi);
+        // console.log('==============iface======================');
+        // console.log(iface);
+        // console.log('====================================');
+        this.contractWithSinger = new Contract(proxy_address || address, iface, this.singer)
     }
 
     listenMethods() {
         this.ethersProvider.on("block", (blockNumber) => {
             // Emitted on every block change
-            console.log(blockNumber);
+            // console.log(blockNumber);
         })
 
-        this.contractWithSinger.on('safeTransferETH', (author, oldValue, newValue, event) => {
-            // 在值变化的时候被调用
+        // this.contractWithSinger.on('Transfer', (author, oldValue, newValue, event) => {
+        //     // 在值变化的时候被调用
 
-            console.log(author);
-            // "0x14791697260E4c9A71f18484C9f997B308e59325"
+        //     console.log(author);
+        //     // "0x14791697260E4c9A71f18484C9f997B308e59325"
 
-            console.log(oldValue);
-            // "Hello World"
+        //     console.log(oldValue);
+        //     // "Hello World"
 
-            console.log(newValue);
-            // "Ilike turtles."
+        //     console.log(newValue);
+        //     // "Ilike turtles."
 
-            // 查看后面的事件触发器  Event Emitter 了解事件对象的属性
-            console.log(event.blockNumber);
-            // 4115004
-        })
+        //     // 查看后面的事件触发器  Event Emitter 了解事件对象的属性
+        //     console.log(event.blockNumber);
+        //     // 4115004
+        // })
+
+        // The null field indicates any value matches, this specifies
+        // "any Transfer from any to myAddress"
+        // let filter = this.contractWithSinger.Transfer();
+
+        console.log(this.contractWithSinger);
+
+        // Listen for our filtered results
+        // this.contractWithSinger.on('Approval', (to, amount) => {
+        //     // console.log('I received ' + value.toString() + ' tokens from ' + from);
+        //     console.log(to);
+        //     console.log(amount);
+
+        // });
+        // this.contractWithSinger.on('Transfer', (from, to, value) => {
+        //     console.log('I received ' + utils.formatEther(value) + ' tokens from ' + from);
+        // });
+
+        
         // this.contractWithSinger.on('addLiquidity', (author, oldValue, newValue, event) => {
         //     // 在值变化的时候被调用
 
